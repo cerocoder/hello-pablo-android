@@ -47,8 +47,12 @@
      открывает SSH-сессию прямо в раннер с уже поднятым эмулятором. Это
      и есть «отладка на внешних ресурсах» буквально, не гипотетически.
 - **Точная команда пуша** (SSH-ключ уже настроен на этой машине):
-  `GIT_SSH_COMMAND="ssh -i ~/.ssh/github_key -o IdentitiesOnly=yes" git push origin main`
-  Remote: `git@github.com:cerocoder/hello-pablo-android.git`.
+  `GIT_SSH_COMMAND="ssh -i ~/.ssh/github_key -o IdentitiesOnly=yes" git push origin HEAD:main`
+  Remote: `git@github.com:cerocoder/hello-pablo-android.git`. **Важно:** тикеты 01 и 02
+  выполняются в изолированных git worktree, где текущая ветка называется не
+  `main` — поэтому именно `HEAD:main`, а не просто `main`, иначе пуш тихо
+  промахивается мимо реальных изменений (найдено во время сборки, не в
+  спецификации — см. поправку исполнителям от 2026-08-17).
 - **После пуша — дождаться реального результата CI**, не считать тикет
   готовым по факту пуша. Опрашивать `https://api.github.com/repos/cerocoder/hello-pablo-android/actions/runs?branch=main&per_page=5`
   (неавторизованный GET работает для публичного репозитория) до
