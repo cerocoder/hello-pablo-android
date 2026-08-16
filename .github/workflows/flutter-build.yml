@@ -1,0 +1,93 @@
+name: Flutter build
+
+on:
+  push:
+    branches: [main]
+    paths: ['flutter/**']
+  pull_request:
+    paths: ['flutter/**']
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Open an interactive SSH debug session (tmate) on the runner'
+        type: boolean
+        default: false
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: flutter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-pablo-debug-apk
+          path: flutter/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+
+      - name: Enable KVM (hardware acceleration for the emulator)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # The Android emulator only lives for the duration of this step's
+      # `script`, so both the logcat capture and the integration test run
+      # happen inside it.
+      - name: Run integration test on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          working-directory: flutter
+          disable-animations: true
+          script: |
+            adb logcat -c
+            adb logcat > "$GITHUB_WORKSPACE/logcat.txt" &
+            LOGCAT_PID=$!
+            flutter test integration_test/app_test.dart
+            TEST_EXIT_CODE=$?
+            sleep 2
+            kill "$LOGCAT_PID" || true
+            wait "$LOGCAT_PID" 2>/dev/null || true
+            exit $TEST_EXIT_CODE
+
+      - name: Upload logcat artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-pablo-emulator-logcat
+          path: logcat.txt
+          if-no-files-found: warn
+
+      # Real, working debug step — inactive by default. Only runs when this
+      # workflow is triggered manually (workflow_dispatch) with debug=true.
+      # Opens an SSH session into the runner so adb/logcat can be driven by
+      # hand from any machine with the tmate client installed.
+      - name: Debug session (tmate)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug == true }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true

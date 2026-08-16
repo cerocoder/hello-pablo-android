@@ -1,0 +1,21 @@
+name: hello_pablo
+description: "Hello Pablo — minimal Flutter demo app (hello-pablo-android comparison project)."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
