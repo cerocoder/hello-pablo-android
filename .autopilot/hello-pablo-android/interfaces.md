@@ -66,8 +66,11 @@
   выдаёт джобу) — руками не трогать, в `.env.example` не заносить, там
   нечего заносить.
 - **Тесты и команды:**
-  - Kotlin: `./gradlew assembleDebug` (сборка), `./gradlew
-    connectedDebugAndroidTest` (инструментальный тест на эмуляторе).
+  - Kotlin: `gradle assembleDebug` (сборка), `gradle connectedDebugAndroidTest`
+    (инструментальный тест на эмуляторе) — через `gradle/actions/setup-gradle`,
+    **не** через `./gradlew` (см. выше — в репозитории нет бинарного
+    `gradle-wrapper.jar`, это осознанное решение, исправлено задним числом
+    после того, как ревью нашло расхождение с исходным текстом тикета 01).
   - Flutter: `flutter build apk --debug` (сборка),
     `flutter test integration_test` на поднятом эмуляторе (инструментальный
     прогон).

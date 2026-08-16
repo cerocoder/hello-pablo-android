@@ -4,7 +4,14 @@
 **Blocked by:** —
 **Зона:** `kotlin-native/`, `.github/workflows/kotlin-build.yml`
 **Волна:** 1 (параллельно с тикетом 02)
-**Status:** ready
+**Status:** done — commit cf22f29 (main), CI зелёный: https://github.com/cerocoder/hello-pablo-android/actions/runs/31976480323
+
+> **Поправка после ревью:** везде ниже `./gradlew` заменено на `gradle` —
+> в репозитории сознательно нет бинарного `gradle-wrapper.jar` (см.
+> `interfaces.md`), а текст тикета при нарезке этого не отразил. Исполнитель
+> ничего не сузил — это моя (оркестратора) недоработка при нарезке, поймана
+> ревью оси Manifest+Spec, исправлена здесь и в `interfaces.md`, без
+> повторного запуска исполнителя.
 
 ## Что должно заработать
 
@@ -19,7 +26,7 @@
 `GIT_SSH_COMMAND="ssh -i ~/.ssh/github_key -o IdentitiesOnly=yes"`)
 запускает workflow, который:
 
-1. Собирает debug-APK (`./gradlew assembleDebug`) и кладёт его как
+1. Собирает debug-APK (`gradle assembleDebug` (через `gradle/actions/setup-gradle`, без бинарного wrapper'а)) и кладёт его как
    артефакт джоба (`actions/upload-artifact`).
 2. Поднимает Android-эмулятор на раннере через
    `reactivecircus/android-emulator-runner` и прогоняет инструментальный
@@ -51,7 +58,7 @@ Actions с тремя артефактами (APK, тестовый отчёт, 
 
 ## Критерии приёмки
 
-- [ ] `kotlin-native/` — валидный Gradle-проект (Kotlin + Jetpack Compose), собирается `./gradlew assembleDebug` без ошибок
+- [ ] `kotlin-native/` — валидный Gradle-проект (Kotlin + Jetpack Compose), собирается `gradle assembleDebug` (через `gradle/actions/setup-gradle`, без бинарного wrapper'а) без ошибок
 - [ ] Экран показывает ровно текст `"Hello Pablo"` (без опечаток, без обрезки)
 - [ ] `.github/workflows/kotlin-build.yml` триггерится на push/PR с `paths: ['kotlin-native/**']`, чтобы не гонять сборку Flutter-модуля
 - [ ] Workflow собирает debug APK и кладёт его артефактом джоба
