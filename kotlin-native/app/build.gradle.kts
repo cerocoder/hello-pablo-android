@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    // Kotlin support is built into AGP 9+; no separate kotlin-android
+    // plugin. The Compose compiler plugin is still applied on its own.
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
@@ -32,10 +33,6 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-}
-
-kotlin {
-    jvmToolchain(17)
 }
 
 dependencies {
