@@ -51,6 +51,23 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # ubuntu-latest runners ship with ~14GB free, which is not enough
+      # headroom for the Flutter SDK + build output already on disk plus a
+      # freshly downloaded Android emulator system image. Strip unrelated
+      # preinstalled toolchains (keeping the Android SDK itself, since the
+      # emulator-runner step below builds on top of it) to avoid
+      # "No space left on device" failures when the system image is fetched.
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       # The Android emulator only lives for the duration of this step's
       # `script`, so both the logcat capture and the integration test run
       # happen inside it.
