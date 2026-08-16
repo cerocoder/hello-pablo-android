@@ -54,13 +54,17 @@ jobs:
       # ubuntu-latest runners ship with ~14GB free, which is not enough
       # headroom for the Flutter SDK + build output already on disk plus a
       # freshly downloaded Android emulator system image. Strip unrelated
-      # preinstalled toolchains (keeping the Android SDK itself, since the
-      # emulator-runner step below builds on top of it) to avoid
-      # "No space left on device" failures when the system image is fetched.
+      # preinstalled toolchains to avoid "No space left on device" failures
+      # when the system image is fetched. Keep android:false (the emulator
+      # step below builds on the preinstalled Android SDK) AND
+      # tool-cache:false — tool-cache lives under $AGENT_TOOLSDIRECTORY
+      # (/opt/hostedtoolcache), which is exactly where the "Set up Flutter"
+      # step above cached the Flutter SDK (cache: true); wiping it here
+      # deletes `flutter` itself before the emulator step can run it.
       - name: Free disk space
         uses: jlumbroso/free-disk-space@v1.3.1
         with:
-          tool-cache: true
+          tool-cache: false
           android: false
           dotnet: true
           haskell: true
