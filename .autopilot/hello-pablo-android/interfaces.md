@@ -75,4 +75,44 @@
 
 ## Что заполнено тикетами (растёт по ходу сборки)
 
-_(пусто — заполняется в Phase 5 после каждого принятого тикета)_
+### Тикет 01 — kotlin-native (принят, CI зелёный)
+
+- **Зелёный run:** https://github.com/cerocoder/hello-pablo-android/actions/runs/31976480323
+  (commit `2ea4665`, workflow `Kotlin Native - Build & Test`, оба джоба —
+  `Build debug APK` и `Instrumented test on emulator` — `success`).
+- **Артефакты джоба** (хранение 90 дней, истекают 2026-11-14):
+  - `hello-pablo-debug-apk` — debug APK (~11.2 МБ)
+  - `hello-pablo-instrumented-test-report` — отчёт инструментального теста (androidTest results/HTML)
+  - `hello-pablo-emulator-logcat` — полный `logcat` за время работы эмулятора (~313 КБ)
+- **Инструментальный тест:** `MainActivityInstrumentedTest.helloPabloTextIsDisplayed` —
+  через `createAndroidComposeRule<MainActivity>()` + `onNodeWithText("Hello Pablo").assertIsDisplayed()`
+  (публичный Compose test API, не просто факт запуска Activity). Прогнан на
+  эмуляторе `reactivecircus/android-emulator-runner@v2` (api-level 30, target
+  `google_apis`, arch `x86_64`).
+- **Debug-шаг:** `mxschmitt/action-tmate@v3`, `if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug == true }}` —
+  в этом прогоне (push) корректно `skipped`.
+- **Версии, зафиксированные в build-файлах** (актуальные стабильные на
+  16–17 августа 2026, сверено по официальным maven-metadata/release notes):
+  AGP `9.3.1`, Kotlin `2.4.10`, Compose BOM `2026.08.00`,
+  `androidx.activity:activity-compose:1.13.0`, Gradle `9.7.0` (через
+  `gradle/actions/setup-gradle`, без бинарного `gradle-wrapper.jar`),
+  `compileSdk`/`targetSdk` `37`, `minSdk` `24`, JDK `17`.
+- **Снэг, полезный для отчёта (R11):** AGP 9.0+ включает Kotlin-поддержку
+  «из коробки» и **запрещает** отдельный плагин
+  `org.jetbrains.kotlin.android` (билд падает с явной ошибкой
+  `InvalidUserCodeException`, указывающей на решение). Первый прогон CI был
+  красным именно из-за этого — плагин применялся по старой памяти вместе с
+  AGP 9.3.1. Починено удалением `id("org.jetbrains.kotlin.android")` из
+  обоих `build.gradle.kts`; `org.jetbrains.kotlin.plugin.compose`
+  (Compose-компилятор) по-прежнему подключается отдельно — см.
+  https://developer.android.com/build/migrate-to-built-in-kotlin.
+  Это единственная причина, по которой первый пуш был красным; второй пуш
+  (2/8 по потолку тикета) — зелёный.
+- **Отдельный снэг для отчёта:** сам репозиторий `cerocoder/hello-pablo-android`
+  первоначально был приватным, из-за чего неавторизованный `GET
+  /repos/.../actions/runs` возвращал 404 — пришлось сначала сделать
+  репозиторий публичным. Также обнаружилось, что скачивание логов джобы
+  (`GET .../actions/jobs/{id}/logs` и `.../actions/runs/{id}/logs`) требует
+  токен даже для публичного репозитория (типовое поведение GitHub API,
+  несмотря на формулировку в доках) — просмотр упавшего шага пришлось
+  делать через веб-интерфейс GitHub вручную.
