@@ -3,15 +3,18 @@ name: Flutter build
 on:
   push:
     branches: [main]
-    paths: ['flutter/**']
+    paths: ['flutter/**', '.github/workflows/flutter-build.yml']
   pull_request:
-    paths: ['flutter/**']
+    paths: ['flutter/**', '.github/workflows/flutter-build.yml']
   workflow_dispatch:
     inputs:
       debug:
         description: 'Open an interactive SSH debug session (tmate) on the runner'
         type: boolean
         default: false
+
+permissions:
+  contents: read
 
 jobs:
   build-and-test:
@@ -88,12 +91,12 @@ jobs:
             adb logcat -c
             adb logcat > "$GITHUB_WORKSPACE/logcat.txt" &
             LOGCAT_PID=$!
-            flutter test integration_test/app_test.dart
-            TEST_EXIT_CODE=$?
+            { flutter test integration_test/app_test.dart --reporter expanded; echo $? > "$GITHUB_WORKSPACE/.test_exit_code"; } 2>&1 | tee "$GITHUB_WORKSPACE/test-report.txt"
+            TEST_EXIT_CODE=$(cat "$GITHUB_WORKSPACE/.test_exit_code")
             sleep 2
             kill "$LOGCAT_PID" || true
             wait "$LOGCAT_PID" 2>/dev/null || true
-            exit $TEST_EXIT_CODE
+            exit "$TEST_EXIT_CODE"
 
       - name: Upload logcat artifact
         if: always()
@@ -101,6 +104,14 @@ jobs:
         with:
           name: hello-pablo-emulator-logcat
           path: logcat.txt
+          if-no-files-found: warn
+
+      - name: Upload Flutter test report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-pablo-flutter-test-report
+          path: test-report.txt
           if-no-files-found: warn
 
       # Real, working debug step — inactive by default. Only runs when this
