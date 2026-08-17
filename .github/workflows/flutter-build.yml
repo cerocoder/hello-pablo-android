@@ -87,16 +87,15 @@ jobs:
           profile: pixel_6
           working-directory: flutter
           disable-animations: true
-          script: |
-            adb logcat -c
-            adb logcat > "$GITHUB_WORKSPACE/logcat.txt" &
-            LOGCAT_PID=$!
-            { flutter test integration_test/app_test.dart --reporter expanded; echo $? > "$GITHUB_WORKSPACE/.test_exit_code"; } 2>&1 | tee "$GITHUB_WORKSPACE/test-report.txt"
-            TEST_EXIT_CODE=$(cat "$GITHUB_WORKSPACE/.test_exit_code")
-            sleep 2
-            kill "$LOGCAT_PID" || true
-            wait "$LOGCAT_PID" 2>/dev/null || true
-            exit "$TEST_EXIT_CODE"
+          # IMPORTANT: reactivecircus/android-emulator-runner invokes each
+          # physical line of `script` as its OWN separate `/usr/bin/sh -c`
+          # process, so shell variables do NOT survive across lines. This
+          # must stay a single physical line (chained with `;`/`&`) so the
+          # whole thing runs in one shell and `$!`/`$?`/`exit` see the same
+          # state. Test output goes to a file (not a pipe — dash has no
+          # PIPESTATUS, so `| tee` silently loses the real exit code) and is
+          # `cat`-ed afterwards so it still shows up in the CI log.
+          script: adb logcat -c; adb logcat > "$GITHUB_WORKSPACE/logcat.txt" 2>/dev/null & echo $! > "$GITHUB_WORKSPACE/.logcat_pid"; flutter test integration_test/app_test.dart --reporter expanded > "$GITHUB_WORKSPACE/test-report.txt" 2>&1; TEST_EXIT=$?; cat "$GITHUB_WORKSPACE/test-report.txt"; kill "$(cat "$GITHUB_WORKSPACE/.logcat_pid")" 2>/dev/null || true; exit "$TEST_EXIT"
 
       - name: Upload logcat artifact
         if: always()
