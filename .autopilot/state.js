@@ -9,7 +9,7 @@ window.STATE =
   "briefFile": "2026-08-16-brief.md",
   "memoryFile": "CLAUDE.md",
   "startedAt": "2026-08-16T23:42:39+02:00",
-  "updatedAt": "2026-08-17T00:57:22+02:00",
+  "updatedAt": "2026-08-17T08:20:38+02:00",
   "finishedAt": null,
   "stages": [
     { "id": "preflight", "status": "done", "startedAt": "2026-08-16T23:42:39+02:00", "finishedAt": "2026-08-16T23:43:44+02:00" },
@@ -36,7 +36,7 @@ window.STATE =
       "concerns": ["дублирование шагов checkout/JDK/Gradle между двумя джобами workflow (структурно, не блокирует)", "actions/upload-artifact@v4 таргетирует устаревший Node 20 (предупреждение, не ошибка)"]
     },
     { "id": "02", "title": "Flutter: Hello Pablo + сборка/эмуляция в CI", "requirements": ["R01","R02","R03","R04","R05","R06","R06.1","R07","R08","R08.1","R05i","R06i","G01","G02"],
-      "blockedBy": [], "wave": 1, "zone": ["flutter/", ".github/workflows/flutter-build.yml"], "status": "in-progress", "startedAt": "2026-08-17T00:06:02+02:00", "retries": 0 },
+      "blockedBy": [], "wave": 1, "zone": ["flutter/", ".github/workflows/flutter-build.yml"], "status": "review", "startedAt": "2026-08-17T00:06:02+02:00", "retries": 0 },
     { "id": "03", "title": "Итоговый отчёт (REPORT.md)", "requirements": ["R09","R10","R11"],
       "blockedBy": ["01","02"], "wave": 2, "zone": ["REPORT.md"], "status": "pending", "retries": 0 }
   ],

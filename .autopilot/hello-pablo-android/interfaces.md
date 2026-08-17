@@ -82,6 +82,48 @@
 
 ## Что заполнено тикетами (растёт по ходу сборки)
 
+### Тикет 02 — flutter (принят, CI зелёный)
+
+- **Зелёный run:** https://github.com/cerocoder/hello-pablo-android/actions/runs/31978162839
+  (commit `007424d`, workflow `Flutter build`, оба джоба — сборка debug APK
+  и инструментальный тест на эмуляторе — `success`).
+- **Артефакты джоба** (90 дней, истекают 2026-11-14):
+  - `hello-pablo-debug-apk` — debug APK (~71.3 МБ — заметно больше Kotlin-версии,
+    типично для Flutter из-за встроенного движка рендеринга; в отчёт)
+  - `hello-pablo-emulator-logcat` — полный `logcat` за время работы эмулятора (~440 КБ)
+- **Integration test:** `integration_test/app_test.dart` — `find.text('Hello Pablo')
+  findsOneWidget` (публичный виджет-API, не факт запуска). Прогнан на
+  `reactivecircus/android-emulator-runner@v2` (api-level 34, google_apis, x86_64).
+- **Debug-шаг:** `mxschmitt/action-tmate`, то же условие
+  `workflow_dispatch`/`inputs.debug`, что и в Kotlin-тикете — корректно
+  `skipped` на push.
+- **Снэг №1 (важно для отчёта, R11):** стандартный `ubuntu-latest`-раннер
+  (~14GB свободного места) не вмещает system-image эмулятора поверх уже
+  установленного Flutter SDK — первый прогон упал с «No space left on
+  device» при установке `system-images;android-34;google_apis;x86_64`.
+  Фикс — `jlumbroso/free-disk-space@v1.3.1` перед шагом с эмулятором.
+  **Ловушка внутри ловушки:** опция `tool-cache: true` этого экшна чистит
+  `$AGENT_TOOLSDIRECTORY` (`/opt/hostedtoolcache`) — ровно туда
+  `subosito/flutter-action` с `cache: true` кладёт сам Flutter SDK, так что
+  первая версия фикса удаляла Flutter и ловила `exit 127`. Итоговая
+  конфигурация: `tool-cache: false`, `android: false` (сам Android SDK
+  нужен), остальное (`dotnet`, `haskell`, `large-packages`,
+  `docker-images`, `swap-storage`) — `true`. У Kotlin-тикета этой проблемы
+  не было — вероятно, из-за меньшего суммарного объёма зависимостей
+  (`gradle/actions/setup-gradle` легче, чем полный Flutter SDK + pub cache).
+- **Снэг №2:** `android/` (Gradle-обвязка под Flutter) написан вручную по
+  официальным шаблонам `flutter_tools` (`flutter create` недоступен на
+  этой машине без Flutter SDK) — сверено построчно с текущим stable-каналом.
+  `gradlew`/`gradlew.bat`/`gradle-wrapper.jar` осознанно не закоммичены
+  (`android/.gitignore`) — по умолчанию поведение шаблона Flutter, само
+  tooling генерирует wrapper при сборке; отличается от `kotlin-native/`,
+  где wrapper не используется вовсе (там сборка идёт через
+  `gradle/actions/setup-gradle` напрямую) — обе технологии в итоге не
+  хранят бинарный `gradle-wrapper.jar` в git, разными путями.
+- **Снэг №3:** размер APK Flutter (~71.3 МБ debug) на порядок больше
+  Kotlin-версии (~11.2 МБ) — ожидаемо для debug-сборки с встроенным Flutter
+  engine и debug-символами; для отчёта (R10, плюсы/минусы).
+
 ### Тикет 01 — kotlin-native (принят, CI зелёный)
 
 - **Зелёный run:** https://github.com/cerocoder/hello-pablo-android/actions/runs/31976480323
