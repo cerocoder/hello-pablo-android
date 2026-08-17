@@ -9,7 +9,7 @@ window.STATE =
   "briefFile": "2026-08-16-brief.md",
   "memoryFile": "CLAUDE.md",
   "startedAt": "2026-08-16T23:42:39+02:00",
-  "updatedAt": "2026-08-17T10:14:26+02:00",
+  "updatedAt": "2026-08-17T10:15:10+02:00",
   "finishedAt": null,
   "stages": [
     { "id": "preflight", "status": "done", "startedAt": "2026-08-16T23:42:39+02:00", "finishedAt": "2026-08-16T23:43:44+02:00" },
@@ -45,7 +45,7 @@ window.STATE =
       "concerns": ["jlumbroso/free-disk-space с tool-cache:true конфликтовал с кэшем Flutter SDK — исправлено (tool-cache:false)", "reactivecircus/android-emulator-runner выполняет каждую строку script: отдельным sh -c — два красных прогона из-за потери переменных между строк, исправлено (одна физическая строка)"]
     },
     { "id": "03", "title": "Итоговый отчёт (REPORT.md)", "requirements": ["R09","R10","R11"],
-      "blockedBy": ["01","02"], "wave": 2, "zone": ["REPORT.md"], "status": "pending", "retries": 0 }
+      "blockedBy": ["01","02"], "wave": 2, "zone": ["REPORT.md"], "status": "in-progress", "startedAt": "2026-08-17T10:15:10+02:00", "retries": 0 }
   ],
   "singlePass": null,
   "tests": null,
