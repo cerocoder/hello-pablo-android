@@ -84,17 +84,17 @@
 
 ### Тикет 02 — flutter (принят, CI зелёный)
 
-- **Зелёный run:** https://github.com/cerocoder/hello-pablo-android/actions/runs/31978162839
-  (commit `007424d`, workflow `Flutter build`, **один** job `build-and-test`
+- **Зелёный run (финальный, после ревью и двух дозапросов):**
+  https://github.com/cerocoder/hello-pablo-android/actions/runs/32008628329
+  (commit `2c36bd2`, workflow `Flutter build`, **один** job `build-and-test`
   — сборка + тест в одной джобе, не два отдельных, как в Kotlin-тикете —
-  `success`). *(Поправлено ревью: раньше здесь ошибочно стояло «оба
-  джоба» по аналогии с тикетом 01.)*
-- **Артефакты джоба** (90 дней, истекают 2026-11-14; список уточняется —
-  на момент этой записи шла доработка недостающего артефакта теста, см.
-  тикет 02):
+  `success`, все 13 реальных шагов зелёные).
+- **Артефакты джоба** (90 дней, истекают 2026-11-15) — все три, как и
+  требовал тикет:
   - `hello-pablo-debug-apk` — debug APK (~71.3 МБ — заметно больше Kotlin-версии,
     типично для Flutter из-за встроенного движка рендеринга; в отчёт)
-  - `hello-pablo-emulator-logcat` — полный `logcat` за время работы эмулятора (~440 КБ)
+  - `hello-pablo-emulator-logcat` — полный `logcat` за время работы эмулятора (~403 КБ)
+  - `hello-pablo-flutter-test-report` — вывод `flutter test --reporter expanded` (~384 байта)
 - **Integration test:** `integration_test/app_test.dart` — `find.text('Hello Pablo')
   findsOneWidget` (публичный виджет-API, не факт запуска). Прогнан на
   `reactivecircus/android-emulator-runner@v2` (api-level 34, google_apis, x86_64).
@@ -127,6 +127,20 @@
 - **Снэг №3:** размер APK Flutter (~71.3 МБ debug) на порядок больше
   Kotlin-версии (~11.2 МБ) — ожидаемо для debug-сборки с встроенным Flutter
   engine и debug-символами; для отчёта (R10, плюсы/минусы).
+- **Снэг №4 (самый дорогой — два красных прогона подряд, важно для R11):**
+  `script:` у `reactivecircus/android-emulator-runner` выполняет **каждую
+  физическую строку YAML отдельным вызовом `/usr/bin/sh -c`** — переменные
+  (`$LOGCAT_PID`, `$TEST_EXIT_CODE`) не переживают переход между строками.
+  Сам тест на эмуляторе оба раза реально проходил («All tests passed!») —
+  падение было чисто в обвязке (`kill "$LOGCAT_PID"` и `exit
+  "$TEST_EXIT_CODE"` получали пустую строку → «Illegal number» → шаг
+  падал с exit code 2). Лечится тем, что весь `script:` пишется **одной
+  физической строкой**, без `| tee` (раннер использует `dash`, там нет
+  `PIPESTATUS`, пайп теряет реальный exit-код) — вывод редиректится в файл
+  через `>`, код забирается через `$?` сразу после, файл `cat`-ится для
+  видимости в логе CI, и только потом `exit`. Читать лог этого шага без
+  токена было нельзя (то же ограничение GitHub API, см. тикет 01) —
+  причину нашли по логу, который вручную скопировал пользователь.
 
 ### Тикет 01 — kotlin-native (принят, CI зелёный)
 
