@@ -9,7 +9,7 @@ window.STATE =
   "briefFile": "2026-08-16-brief.md",
   "memoryFile": "CLAUDE.md",
   "startedAt": "2026-08-16T23:42:39+02:00",
-  "updatedAt": "2026-08-17T10:15:10+02:00",
+  "updatedAt": "2026-08-17T10:31:32+02:00",
   "finishedAt": null,
   "stages": [
     { "id": "preflight", "status": "done", "startedAt": "2026-08-16T23:42:39+02:00", "finishedAt": "2026-08-16T23:43:44+02:00" },
@@ -17,12 +17,12 @@ window.STATE =
     { "id": "briefing",  "status": "done", "startedAt": "2026-08-16T23:44:20+02:00", "finishedAt": "2026-08-16T23:56:44+02:00" },
     { "id": "spec",      "status": "done", "startedAt": "2026-08-16T23:56:44+02:00", "finishedAt": "2026-08-17T00:02:18+02:00" },
     { "id": "plan",      "status": "done", "startedAt": "2026-08-17T00:02:18+02:00", "finishedAt": "2026-08-17T00:04:27+02:00", "note": "3 тикета, ярус T1" },
-    { "id": "build",     "status": "active", "startedAt": "2026-08-17T00:04:27+02:00", "note": "2 из 3 тасков готово" },
-    { "id": "review",    "status": "pending" },
-    { "id": "final",     "status": "pending" }
+    { "id": "build",     "status": "done", "startedAt": "2026-08-17T00:04:27+02:00", "finishedAt": "2026-08-17T10:31:32+02:00", "note": "3 из 3 тасков готово" },
+    { "id": "review",    "status": "done", "startedAt": "2026-08-17T00:52:40+02:00", "finishedAt": "2026-08-17T10:31:32+02:00", "note": "проверено 3 из 3, все находки закрыты" },
+    { "id": "final",     "status": "active", "startedAt": "2026-08-17T10:31:32+02:00" }
   ],
   "requirements": {
-    "total": 17, "done": 13, "inTicket": 4, "inSpec": 0,
+    "total": 17, "done": 17, "inTicket": 0, "inSpec": 0,
     "placeholder": 0, "deferred": 0, "dropped": 0
   },
   "tickets": [
@@ -45,7 +45,14 @@ window.STATE =
       "concerns": ["jlumbroso/free-disk-space с tool-cache:true конфликтовал с кэшем Flutter SDK — исправлено (tool-cache:false)", "reactivecircus/android-emulator-runner выполняет каждую строку script: отдельным sh -c — два красных прогона из-за потери переменных между строк, исправлено (одна физическая строка)"]
     },
     { "id": "03", "title": "Итоговый отчёт (REPORT.md)", "requirements": ["R09","R10","R11"],
-      "blockedBy": ["01","02"], "wave": 2, "zone": ["REPORT.md"], "status": "in-progress", "startedAt": "2026-08-17T10:15:10+02:00", "retries": 0 }
+      "blockedBy": ["01","02"], "wave": 2, "zone": ["REPORT.md"],
+      "status": "done", "startedAt": "2026-08-17T10:15:10+02:00", "finishedAt": "2026-08-17T10:31:32+02:00",
+      "retries": 0, "repairs": 1, "handoffs": 0,
+      "files": ["REPORT.md"],
+      "tests": null,
+      "commit": "7167be9",
+      "concerns": []
+    }
   ],
   "singlePass": null,
   "tests": null,
