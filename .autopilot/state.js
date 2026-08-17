@@ -9,8 +9,8 @@ window.STATE =
   "briefFile": "2026-08-16-brief.md",
   "memoryFile": "CLAUDE.md",
   "startedAt": "2026-08-16T23:42:39+02:00",
-  "updatedAt": "2026-08-17T10:31:32+02:00",
-  "finishedAt": null,
+  "updatedAt": "2026-08-17T10:40:47+02:00",
+  "finishedAt": "2026-08-17T10:40:47+02:00",
   "stages": [
     { "id": "preflight", "status": "done", "startedAt": "2026-08-16T23:42:39+02:00", "finishedAt": "2026-08-16T23:43:44+02:00" },
     { "id": "manifest",  "status": "done", "startedAt": "2026-08-16T23:43:44+02:00", "finishedAt": "2026-08-16T23:44:20+02:00" },
@@ -19,7 +19,7 @@ window.STATE =
     { "id": "plan",      "status": "done", "startedAt": "2026-08-17T00:02:18+02:00", "finishedAt": "2026-08-17T00:04:27+02:00", "note": "3 тикета, ярус T1" },
     { "id": "build",     "status": "done", "startedAt": "2026-08-17T00:04:27+02:00", "finishedAt": "2026-08-17T10:31:32+02:00", "note": "3 из 3 тасков готово" },
     { "id": "review",    "status": "done", "startedAt": "2026-08-17T00:52:40+02:00", "finishedAt": "2026-08-17T10:31:32+02:00", "note": "проверено 3 из 3, все находки закрыты" },
-    { "id": "final",     "status": "active", "startedAt": "2026-08-17T10:31:32+02:00" }
+    { "id": "final",     "status": "done", "startedAt": "2026-08-17T10:31:32+02:00", "finishedAt": "2026-08-17T10:40:47+02:00", "note": "слепая приёмка нашла 1 расхождение, исправлено" }
   ],
   "requirements": {
     "total": 17, "done": 17, "inTicket": 0, "inSpec": 0,
@@ -55,9 +55,13 @@ window.STATE =
     }
   ],
   "singlePass": null,
-  "tests": null,
+  "tests": { "passed": 2, "failed": 0 },
   "debt": { "placeholders": [], "assumptions": [], "emptyEnv": [] },
   "additions": [],
   "coverage": { "found": 1, "fixed": 1, "deferred": 0 },
-  "blind": null
+  "blind": {
+    "R01": "реализовано", "R05/R06/R07": "реализовано", "R08/R08.1": "реализовано",
+    "R09/R10/R11": "найдено частично (неточная история CI-прогонов Flutter в REPORT.md) → исправлено, перепроверено против API, коммит 6fdf8f1",
+    "notChecked": "размеры артефактов (APK/logcat) — скачивание требует авторизации даже для публичного репо, не проверялось умышленно"
+  }
 }
